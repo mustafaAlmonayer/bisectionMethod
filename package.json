@@ -1,0 +1,15 @@
+{
+	"name": "bisection",
+	"version": "1.0.0",
+	"description": "get the root(s) of the function using bisection method",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "index.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"expr-eval": "^2.0.2"
+	}
+}
