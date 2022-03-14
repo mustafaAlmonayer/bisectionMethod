@@ -1,24 +1,29 @@
 const Parser = require('expr-eval').Parser;
 
 class BisectionMethod {
-	equation;
-	a;
-	b;
-	e;
-	cArray;
-	output;
-
-	constructor(startPoint, endPoint, givenError, equation) {
+	constructor(startPoint, endPoint, givenError, equation, config) {
 		this.a = startPoint;
 		this.b = endPoint;
 		this.e = givenError;
 		this.equation = equation;
+		this.config = config;
+		this.c = undefined;
 		this.cArray = new Array();
 		this.output = [ {} ];
 	}
 
 	solveEquation(number) {
 		return Parser.evaluate(this.equation, { x: number });
+	}
+
+	bisectionRoot() {
+		this.c = (this.a + this.b) / 2;
+	}
+
+	falsePositionRoot() {
+		const fb = this.solveEquation(this.b);
+		const fa = this.solveEquation(this.a);
+		this.c = this.b - fb * (this.a - this.b) / (fa - fb);
 	}
 
 	solveRoot() {
@@ -28,32 +33,39 @@ class BisectionMethod {
 			let u = this.solveEquation(this.a);
 			let v = this.solveEquation(this.b);
 			let i = 0;
+
 			while (true) {
-				const c = (this.a + this.b) / 2;
-				this.cArray[i] = c;
-				const w = this.solveEquation(c);
+				if (this.config) {
+					this.bisectionRoot();
+				} else {
+					this.falsePositionRoot();
+					console.log(this.c);
+				}
+
+				this.cArray[i] = this.c;
+				const w = this.solveEquation(this.c);
 
 				if (u * w < 0) {
-					this.b = c;
+					this.b = this.c;
 					v = w;
-				} else if (v * w < 0) {
-					this.a = c;
-					u = w;
 				} else {
-					return;
+					this.a = this.c;
+					u = w;
 				}
 
 				if (i !== 0) {
 					const curC = this.cArray[i];
 					const preC = this.cArray[i - 1];
-					const error = Math.abs(curC - preC) / curC;
-					this.output[i] = { i, c, w, error };
+					const error = Math.abs((curC - preC) / curC);
+					const root = this.c;
+					this.output[i] = { i, root, w, error };
 
 					if (error < this.e) {
 						return this.output;
 					}
 				} else {
-					this.output[i] = { i, c, w, error: undefined };
+					const root = this.c;
+					this.output[i] = { i, root, w, error: undefined };
 				}
 
 				i += 1;
