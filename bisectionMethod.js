@@ -6,10 +6,24 @@ class BisectionMethod {
 		this.b = endPoint;
 		this.e = givenError;
 		this.equation = equation;
-		this.config = config;
 		this.c = undefined;
 		this.cArray = new Array();
 		this.output = [ {} ];
+		switch (config) {
+			case 'bisection': {
+				this.rootMethod = this.bisectionRoot;
+				break;
+			}
+			case 'falsePosition': {
+				this.rootMethod = this.falsePositionRoot;
+				break;
+			}
+			default: {
+				this.rootMethod = () => {
+					return;
+				};
+			}
+		}
 	}
 
 	solveEquation(number) {
@@ -35,12 +49,7 @@ class BisectionMethod {
 			let i = 0;
 
 			while (true) {
-				if (this.config) {
-					this.bisectionRoot();
-				} else {
-					this.falsePositionRoot();
-					console.log(this.c);
-				}
+				this.rootMethod();
 
 				this.cArray[i] = this.c;
 				const w = this.solveEquation(this.c);
